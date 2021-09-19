@@ -2,7 +2,7 @@ name: APK Build
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, sc ]
 
 jobs:
   gplay:
