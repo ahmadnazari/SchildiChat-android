@@ -18,9 +18,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-            
-      - name: Assemble FDroid unsigned apk
-        run: ./gradlew clean assembleFdroidRelease --stacktrace
         
       - name: Assemble GPlay unsigned apk
         run: ./gradlew clean assembleGplayRelease --stacktrace
@@ -35,26 +32,9 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
           
-      - name: Sign artifact2
-        id: signArtifact2
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: vector/build/outputs/apk/fdroid/release
-          alias: ${{ secrets.KEYALIAS }}
-          signingKeyBase64: ${{ secrets.KEYSTORE }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-    
       - name: Upload Gplay signed APKs
         uses: actions/upload-artifact@v2
         with:
           name: release-apk-signed-GPlay
           path: |
             vector/build/outputs/apk/gplay/release/*.apk
-            
-      - name: Upload Fdroid signed APKs
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-apk-signed-Fdroid
-          path: |
-            vector/build/outputs/apk/fdroid/release/*.apk
