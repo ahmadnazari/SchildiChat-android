@@ -18,6 +18,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+            
+      - name: Assemble FDroid unsigned apk
+        run: ./gradlew clean assembleFdroidRelease --stacktrace
+        
       - name: Assemble GPlay unsigned apk
         run: ./gradlew clean assembleGplayRelease --stacktrace
       
@@ -30,31 +34,9 @@ jobs:
           signingKeyBase64: ${{ secrets.KEYSTORE }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-    
-      - name: Upload Gplay signed APKs
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-apk-signed-GPlay
-          path: |
-            vector/build/outputs/apk/gplay/release/*.apk
-  fdroid:
-    name: Build unsigned FDroid APK
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Assemble FDroid unsigned apk
-        run: ./gradlew clean assembleFdroidRelease --stacktrace
-      
-      - name: Sign artifact
-        id: signArtifact
+          
+      - name: Sign artifact2
+        id: signArtifact2
         uses: r0adkll/sign-android-release@v1
         with:
           releaseDirectory: vector/build/outputs/apk/fdroid/release
@@ -63,6 +45,13 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
     
+      - name: Upload Gplay signed APKs
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-apk-signed-GPlay
+          path: |
+            vector/build/outputs/apk/gplay/release/*.apk
+            
       - name: Upload Fdroid signed APKs
         uses: actions/upload-artifact@v2
         with:
